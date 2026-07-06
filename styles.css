@@ -170,12 +170,13 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 
 @media (max-width: 780px) {
   .text-button { font-size: 10px; }
-  .hero { min-height: auto; grid-template-columns: 1fr; gap: 48px; padding-top: 44px; }
+  .hero { min-height: auto; grid-template-columns: 1fr; gap: 30px; padding-top: 44px; padding-bottom: 30px; }
   h1 { font-size: clamp(39px, 12vw, 62px); }
-  .hero-side { width: 100%; align-items: stretch; gap: 36px; }
-  .hero-portrait { width: min(52vw, 200px); margin: 0 0 0 auto; }
-  .hero-note { max-width: 350px; }
-  .catalog { padding-top: 40px; }
+  .hero-side { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 86px; gap: 14px; align-items: start; padding-top: 18px; border-top: 1px solid var(--ink); }
+  .hero-portrait { grid-column: 2; grid-row: 1; width: 86px; margin: 0; }
+  .hero-note { grid-column: 1; grid-row: 1; max-width: none; padding-top: 0; border-top: 0; }
+  .hero-note p { margin-bottom: 0; }
+  .catalog { padding-top: 28px; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 38px 12px; }
   footer { grid-template-columns: 1fr; gap: 18px; }
   .field-grid { grid-template-columns: 1fr; }
