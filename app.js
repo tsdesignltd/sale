@@ -1,63 +1,5 @@
-const STORAGE_KEY = "sunami-sale-products-v1";
-const SAMPLE_SEEDED_KEY = "sunami-sale-samples-v1";
+const STORAGE_KEY = "sunami-sale-products-v2";
 const MESSENGER_RECIPIENT = "";
-const SAMPLE_PRODUCTS = [
-  {
-    id: "sample-sigma-lens",
-    name: "SIGMA ズームレンズ",
-    category: "カメラ・映像",
-    free: false,
-    price: 12000,
-    description: "広角から標準域をカバーするSIGMAのズームレンズです。外観には使用に伴う小傷があります。価格・対応マウント・動作状態は出品前にご確認ください。",
-    status: "available",
-    photo: "assets/products/sigma-lens.jpeg",
-    updatedAt: "2026-07-06T00:00:00.000Z"
-  },
-  {
-    id: "sample-car-springs",
-    name: "車用スプリング・ラバーセット",
-    category: "自動車用品",
-    free: false,
-    price: 6000,
-    description: "車両用のスプリング4本とラバーパーツのセットです。塗装の剥がれや錆があります。適合車種とセット内容は出品前にご確認ください。",
-    status: "available",
-    photo: "assets/products/car-springs.jpeg",
-    updatedAt: "2026-07-06T00:00:00.000Z"
-  },
-  {
-    id: "sample-camera-gimbal",
-    name: "DJI RONIN-SC カメラジンバル",
-    category: "カメラ・映像",
-    free: false,
-    price: 18000,
-    description: "ミラーレスカメラ向けの3軸ジンバルです。撮影機材整理のため出品するサンプルです。付属品と動作状態は出品前にご確認ください。",
-    status: "available",
-    photo: "assets/products/camera-gimbal.jpg",
-    updatedAt: "2026-07-06T00:00:00.000Z"
-  },
-  {
-    id: "sample-outdoor-chair",
-    name: "NEMO リクライニングチェア",
-    category: "アウトドア",
-    free: false,
-    price: 15000,
-    description: "座面が吊り下げ式になったアウトドアチェアです。屋外で使用した中古品のため、脚部や生地の状態は写真と現物でご確認ください。",
-    status: "available",
-    photo: "assets/products/outdoor-chair.jpeg",
-    updatedAt: "2026-07-06T00:00:00.000Z"
-  },
-  {
-    id: "sample-bike-roller",
-    name: "LiveRide ハイブリッドローラー",
-    category: "自転車用品",
-    free: false,
-    price: 20000,
-    description: "室内トレーニング用のハイブリッドローラーです。使用に伴う傷や汚れがあります。対応ホイールサイズと固定部品をご確認ください。",
-    status: "available",
-    photo: "assets/products/bike-roller.jpeg",
-    updatedAt: "2026-07-06T00:00:00.000Z"
-  }
-];
 
 const $ = (selector) => document.querySelector(selector);
 const grid = $("#productGrid");
@@ -72,14 +14,9 @@ let pendingPhoto = "";
 
 function loadProducts() {
   try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    if (localStorage.getItem(SAMPLE_SEEDED_KEY)) return stored;
-    const seeded = [...SAMPLE_PRODUCTS, ...stored];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
-    localStorage.setItem(SAMPLE_SEEDED_KEY, "1");
-    return seeded;
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
   } catch {
-    return [...SAMPLE_PRODUCTS];
+    return [];
   }
 }
 
