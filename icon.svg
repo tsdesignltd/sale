@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#38543c"/>
+  <circle cx="256" cy="256" r="178" fill="#f3efe5"/>
+  <text x="256" y="337" text-anchor="middle" font-family="serif" font-size="230" fill="#38543c">角</text>
+</svg>
