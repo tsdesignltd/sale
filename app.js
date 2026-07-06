@@ -1,6 +1,6 @@
 const STORAGE_KEY = "sunami-sale-products-v1";
 const SAMPLE_SEEDED_KEY = "sunami-sale-samples-v1";
-const CONTACT_EMAIL = "takeo@example.com";
+const MESSENGER_RECIPIENT = "";
 const SAMPLE_PRODUCTS = [
   {
     id: "sample-sigma-lens",
@@ -108,6 +108,49 @@ function statusLabel(status) {
   return { available: "販売中", reserved: "商談中", sold: "売約済み" }[status] || "販売中";
 }
 
+function inquiryLabel(product) {
+  return product.free ? "譲渡希望" : "購入希望";
+}
+
+function inquiryMessage(product) {
+  const label = inquiryLabel(product);
+  return `【${label}】\n「${product.name}」（${formatPrice(product)}）を希望します。\nまだお取引可能でしょうか？`;
+}
+
+async function copyInquiryMessage(message) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(message);
+    return;
+  }
+  const textarea = document.createElement("textarea");
+  textarea.value = message;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function openMessengerInquiry(id) {
+  const product = products.find((item) => item.id === id);
+  if (!product || product.status !== "available") return;
+  const recipient = MESSENGER_RECIPIENT.trim().replace(/^@/, "");
+  const messengerUrl = recipient
+    ? `https://m.me/${encodeURIComponent(recipient)}?ref=${encodeURIComponent(product.id)}`
+    : "https://www.facebook.com/messages/";
+  const messengerWindow = window.open(messengerUrl, "_blank");
+  if (messengerWindow) messengerWindow.opener = null;
+
+  copyInquiryMessage(inquiryMessage(product))
+    .then(() => showToast("希望メッセージをコピーしました"))
+    .catch(() => showToast("Messengerで商品名を添えてご連絡ください"));
+
+  if (!messengerWindow) {
+    location.href = messengerUrl;
+  }
+}
+
 function render() {
   const categories = ["すべて", ...new Set(products.map((item) => item.category))];
   if (!categories.includes(activeCategory)) activeCategory = "すべて";
@@ -137,7 +180,13 @@ function render() {
           <h3 class="product-title">${escapeHTML(product.name)}</h3>
           <span class="product-price">${formatPrice(product)}</span>
         </div>
-        <button class="edit-link" type="button" data-edit="${product.id}">内容を編集</button>
+        <div class="card-actions">
+          <button class="inquiry-button" type="button" data-inquiry="${product.id}" ${product.status !== "available" ? "disabled" : ""}>
+            ${product.status === "available" ? inquiryLabel(product) : statusLabel(product.status)}
+            <span aria-hidden="true">↗</span>
+          </button>
+          <button class="edit-link" type="button" data-edit="${product.id}">内容を編集</button>
+        </div>
       </div>
     </article>
   `).join("");
@@ -206,7 +255,6 @@ function openDetail(id) {
   const product = products.find((item) => item.id === id);
   if (!product) return;
   const unavailable = product.status !== "available";
-  const subject = encodeURIComponent(`「${product.name}」について`);
   $("#detailContent").innerHTML = `
     <div class="detail-layout">
       ${product.photo
@@ -217,10 +265,10 @@ function openDetail(id) {
         <h2>${escapeHTML(product.name)}</h2>
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
-        <a class="contact-link" href="mailto:${CONTACT_EMAIL}?subject=${subject}" aria-disabled="${unavailable}">
-          ${unavailable ? statusLabel(product.status) : "購入を相談する"}
-        </a>
-        <p class="detail-caption">メールアプリが開きます。送料・受け渡し方法は個別にご相談ください。</p>
+        <button class="contact-link" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
+          ${unavailable ? statusLabel(product.status) : `${inquiryLabel(product)}をMessengerで送る`}
+        </button>
+        <p class="detail-caption">希望文をコピーしてMessengerを開きます。送料・受け渡し方法は個別にご相談ください。</p>
       </div>
     </div>
   `;
@@ -268,6 +316,12 @@ filters.addEventListener("click", (event) => {
 });
 
 grid.addEventListener("click", (event) => {
+  const inquiryButton = event.target.closest("[data-inquiry]");
+  if (inquiryButton) {
+    event.stopPropagation();
+    openMessengerInquiry(inquiryButton.dataset.inquiry);
+    return;
+  }
   const editButton = event.target.closest("[data-edit]");
   if (editButton) {
     event.stopPropagation();
@@ -276,6 +330,12 @@ grid.addEventListener("click", (event) => {
   }
   const card = event.target.closest("[data-id]");
   if (card) openDetail(card.dataset.id);
+});
+
+detailDialog.addEventListener("click", (event) => {
+  const inquiryButton = event.target.closest("[data-detail-inquiry]");
+  if (!inquiryButton) return;
+  openMessengerInquiry(inquiryButton.dataset.detailInquiry);
 });
 
 grid.addEventListener("keydown", (event) => {
