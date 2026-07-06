@@ -182,7 +182,7 @@ function render() {
         </div>
         <p class="product-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <div class="card-actions">
-          <button class="inquiry-button" type="button" data-inquiry="${product.id}" ${product.status !== "available" ? "disabled" : ""}>
+          <button class="inquiry-button ${product.free ? "is-free" : "is-paid"}" type="button" data-inquiry="${product.id}" ${product.status !== "available" ? "disabled" : ""}>
             ${product.status === "available" ? inquiryLabel(product) : statusLabel(product.status)}
             <span aria-hidden="true">↗</span>
           </button>
@@ -266,7 +266,7 @@ function openDetail(id) {
         <h2>${escapeHTML(product.name)}</h2>
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
-        <button class="contact-link" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
+        <button class="contact-link ${product.free ? "is-free" : "is-paid"}" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
           ${unavailable ? statusLabel(product.status) : `${inquiryLabel(product)}をMessengerで送る`}
         </button>
         <p class="detail-caption">希望文をコピーしてMessengerを開きます。送料・受け渡し方法は個別にご相談ください。</p>
