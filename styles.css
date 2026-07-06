@@ -24,16 +24,6 @@ button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { color: inherit; }
 
-.site-header {
-  height: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(22px, 5vw, 72px);
-  border-bottom: 1px solid var(--line);
-}
-.brand { display: flex; align-items: center; gap: 12px; color: inherit; font-weight: 600; text-decoration: none; letter-spacing: .06em; }
-.brand-mark { display: grid; place-items: center; width: 35px; height: 35px; color: var(--cream); background: var(--moss); border-radius: 50%; font-family: serif; }
 .text-button, .icon-button { border: 0; background: transparent; cursor: pointer; }
 .text-button { padding: 10px 0; border-bottom: 1px solid var(--ink); font-size: 12px; letter-spacing: .08em; }
 
@@ -175,7 +165,6 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 }
 
 @media (max-width: 780px) {
-  .site-header { height: 64px; }
   .text-button { font-size: 10px; }
   .hero { min-height: auto; grid-template-columns: 1fr; gap: 48px; padding-top: 44px; }
   h1 { font-size: clamp(39px, 12vw, 62px); }
@@ -195,7 +184,6 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 @media (max-width: 430px) {
   .passcode-shell { padding: 28px 22px; }
   .hero-guide { padding: 18px 16px; }
-  .brand { font-size: 13px; }
   .hero-lead { font-size: 13px; }
   .guide-list p { font-size: 13px; }
   .catalog-heading h2 { font-size: 32px; }

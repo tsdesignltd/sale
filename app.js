@@ -342,7 +342,6 @@ $("#cancelPasscode").addEventListener("click", () => {
 });
 $("#closeEditor").addEventListener("click", () => editor.close());
 $("#closeDetail").addEventListener("click", () => detailDialog.close());
-$("#aboutButton").addEventListener("click", () => $("#about").scrollIntoView());
 
 $("#freeInput").addEventListener("change", (event) => {
   $("#priceInput").disabled = event.target.checked;
