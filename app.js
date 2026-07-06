@@ -126,7 +126,7 @@ function statusLabel(status) {
 }
 
 function inquiryLabel(product) {
-  return product.free ? "譲渡希望" : "購入希望";
+  return product.free ? "欲しい" : "買いたい";
 }
 
 function inquiryMessage(product) {

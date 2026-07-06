@@ -1,9 +1,9 @@
-const CACHE = "sunami-sale-v26";
+const CACHE = "sunami-sale-v27";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=20",
-  "./app.js?v=20",
+  "./styles.css?v=21",
+  "./app.js?v=21",
   "./icon.svg",
   "./portrait.svg",
   "./manifest.webmanifest"
