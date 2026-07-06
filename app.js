@@ -1,5 +1,5 @@
 const STORAGE_KEY = "sunami-sale-products-v2";
-const MESSENGER_RECIPIENT = "";
+const LINE_CONTACT_URL = "https://lin.ee/US6LBI4";
 const ADMIN_SESSION_KEY = "sunami-sale-admin-passcode";
 const SUPABASE_URL = "https://kuxdmlmimltngqjekckk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_C6cNc2gB3JL2wQo3ZyF-HA_OJcGH7hh";
@@ -142,22 +142,18 @@ async function copyInquiryMessage(message) {
   textarea.remove();
 }
 
-function openMessengerInquiry(id) {
+function openLineInquiry(id) {
   const product = products.find((item) => item.id === id);
   if (!product || product.status !== "available") return;
-  const recipient = MESSENGER_RECIPIENT.trim().replace(/^@/, "");
-  const messengerUrl = recipient
-    ? `https://m.me/${encodeURIComponent(recipient)}?ref=${encodeURIComponent(product.id)}`
-    : "https://www.facebook.com/messages/";
-  const messengerWindow = window.open(messengerUrl, "_blank");
-  if (messengerWindow) messengerWindow.opener = null;
+  const lineWindow = window.open(LINE_CONTACT_URL, "_blank");
+  if (lineWindow) lineWindow.opener = null;
 
   copyInquiryMessage(inquiryMessage(product))
     .then(() => showToast("希望メッセージをコピーしました"))
-    .catch(() => showToast("Messengerで商品名を添えてご連絡ください"));
+    .catch(() => showToast("公式LINEで商品名を添えてご連絡ください"));
 
-  if (!messengerWindow) {
-    location.href = messengerUrl;
+  if (!lineWindow) {
+    location.href = LINE_CONTACT_URL;
   }
 }
 
@@ -277,9 +273,9 @@ function openDetail(id) {
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <button class="contact-link ${product.free ? "is-free" : "is-paid"}" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
-          ${unavailable ? statusLabel(product.status) : `${inquiryLabel(product)}をMessengerで送る`}
+          ${unavailable ? statusLabel(product.status) : `${inquiryLabel(product)}を公式LINEで連絡`}
         </button>
-        <p class="detail-caption">希望文をコピーしてMessengerを開きます。送料・受け渡し方法は個別にご相談ください。</p>
+        <p class="detail-caption">希望文をコピーして公式LINEを開きます。送料・受け渡し方法は個別にご相談ください。</p>
       </div>
     </div>
   `;
@@ -377,7 +373,7 @@ grid.addEventListener("click", (event) => {
   const inquiryButton = event.target.closest("[data-inquiry]");
   if (inquiryButton) {
     event.stopPropagation();
-    openMessengerInquiry(inquiryButton.dataset.inquiry);
+    openLineInquiry(inquiryButton.dataset.inquiry);
     return;
   }
   const editButton = event.target.closest("[data-edit]");
@@ -393,7 +389,7 @@ grid.addEventListener("click", (event) => {
 detailDialog.addEventListener("click", (event) => {
   const inquiryButton = event.target.closest("[data-detail-inquiry]");
   if (!inquiryButton) return;
-  openMessengerInquiry(inquiryButton.dataset.detailInquiry);
+  openLineInquiry(inquiryButton.dataset.detailInquiry);
 });
 
 grid.addEventListener("keydown", (event) => {
