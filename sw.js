@@ -1,5 +1,18 @@
-const CACHE = "sunami-sale-v4";
-const ASSETS = ["./", "./index.html", "./styles.css?v=4", "./app.js?v=4", "./icon.svg", "./portrait.svg", "./manifest.webmanifest"];
+const CACHE = "sunami-sale-v5";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./styles.css?v=5",
+  "./app.js?v=5",
+  "./icon.svg",
+  "./portrait.svg",
+  "./manifest.webmanifest",
+  "./assets/products/sigma-lens.jpeg",
+  "./assets/products/car-springs.jpeg",
+  "./assets/products/camera-gimbal.jpg",
+  "./assets/products/outdoor-chair.jpeg",
+  "./assets/products/bike-roller.jpeg"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
