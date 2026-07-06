@@ -54,7 +54,7 @@ h1 { max-width: 800px; margin: 0; font-size: clamp(42px, 7vw, 92px); font-weight
 .guide-list li { display: grid; grid-template-columns: 42px 1fr; align-items: baseline; border-top: 1px solid var(--line); }
 .guide-list li:last-child { border-bottom: 1px solid var(--line); }
 .guide-list span { color: var(--moss); font-size: 10px; }
-.guide-list p { margin: 0; padding: 12px 0; line-height: 1.7; font-size: 11px; }
+.guide-list p { margin: 0; padding: 12px 0; line-height: 1.7; font-size: 14px; }
 .hero-side { align-self: stretch; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
 .hero-portrait { width: min(100%, 250px); aspect-ratio: 1; margin: 0 0 36px; overflow: hidden; border: 1px solid rgba(56,84,60,.16); border-radius: 50%; background: rgba(56,84,60,.07); }
 .hero-portrait img { width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -197,6 +197,7 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
   .hero-guide { padding: 18px 16px; }
   .brand { font-size: 13px; }
   .hero-lead { font-size: 13px; }
+  .guide-list p { font-size: 13px; }
   .catalog-heading h2 { font-size: 32px; }
   .product-title { font-size: 13px; }
   .product-price { margin-top: 6px; }
