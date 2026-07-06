@@ -180,6 +180,7 @@ function render() {
           <h3 class="product-title">${escapeHTML(product.name)}</h3>
           <span class="product-price">${formatPrice(product)}</span>
         </div>
+        <p class="product-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <div class="card-actions">
           <button class="inquiry-button" type="button" data-inquiry="${product.id}" ${product.status !== "available" ? "disabled" : ""}>
             ${product.status === "available" ? inquiryLabel(product) : statusLabel(product.status)}

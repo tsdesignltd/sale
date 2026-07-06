@@ -85,7 +85,8 @@ h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); font-weight: 500; letter-spac
 .product-title-row { display: block; }
 .product-title { margin: 0; font-size: 15px; font-weight: 500; }
 .product-price { display: block; margin-top: 7px; white-space: nowrap; font-size: 13px; font-weight: 600; }
-.card-actions { margin-top: auto; padding-top: 18px; }
+.product-description { height: 4.8em; display: -webkit-box; margin: 10px 0 0; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.card-actions { margin-top: auto; padding-top: 12px; }
 .inquiry-button { position: relative; width: 100%; min-height: 42px; display: flex; align-items: center; justify-content: center; padding: 11px 42px; color: white; background: var(--moss); border: 1px solid var(--moss); border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 600; }
 .inquiry-button span { position: absolute; right: 17px; }
 .inquiry-button:hover { color: var(--moss); background: transparent; }
