@@ -1,7 +1,8 @@
 const STORAGE_KEY = "sunami-sale-products-v2";
 const MESSENGER_RECIPIENT = "";
-const ADMIN_PASSCODE = "4933";
-const ADMIN_SESSION_KEY = "sunami-sale-admin-auth";
+const ADMIN_SESSION_KEY = "sunami-sale-admin-passcode";
+const SUPABASE_URL = "https://kuxdmlmimltngqjekckk.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_C6cNc2gB3JL2wQo3ZyF-HA_OJcGH7hh";
 
 const $ = (selector) => document.querySelector(selector);
 const grid = $("#productGrid");
@@ -12,12 +13,13 @@ const detailDialog = $("#detailDialog");
 const form = $("#productForm");
 const passcodeDialog = $("#passcodeDialog");
 const passcodeForm = $("#passcodeForm");
-let products = loadProducts();
+let products = [];
 let activeCategory = "すべて";
 let pendingPhoto = "";
 let pendingAdminAction = null;
+let refreshPromise = null;
 
-function loadProducts() {
+function loadLegacyProducts() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
   } catch {
@@ -25,14 +27,80 @@ function loadProducts() {
   }
 }
 
-function saveProducts() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    return true;
-  } catch {
-    showToast("保存容量を超えました。写真を小さくしてお試しください");
-    return false;
+async function apiRequest(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}${path}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+      "Content-Type": "application/json",
+      ...options.headers
+    }
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    const error = new Error(detail.message || "通信に失敗しました");
+    error.status = response.status;
+    throw error;
   }
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+function fromCloudProduct(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category,
+    free: row.free,
+    price: row.price,
+    description: row.description,
+    status: row.status,
+    photo: row.photo,
+    updatedAt: row.updated_at
+  };
+}
+
+async function refreshProducts({ silent = false } = {}) {
+  if (refreshPromise) return refreshPromise;
+  refreshPromise = (async () => {
+    try {
+      const rows = await apiRequest("/rest/v1/products?select=*&order=updated_at.desc");
+      products = rows.map(fromCloudProduct);
+      render();
+    } catch {
+      if (!silent) {
+        $("#itemCount").textContent = "接続エラー";
+        showToast("商品を読み込めませんでした。通信状態をご確認ください");
+      }
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+  return refreshPromise;
+}
+
+async function adminMutation(passcode, action, product = {}) {
+  return apiRequest("/rest/v1/rpc/admin_product_mutation", {
+    method: "POST",
+    body: JSON.stringify({
+      p_passcode: passcode,
+      p_action: action,
+      p_product: product
+    })
+  });
+}
+
+async function migrateLegacyProducts(passcode) {
+  const legacyProducts = loadLegacyProducts();
+  if (!legacyProducts.length) return;
+  showToast(`${legacyProducts.length}件の商品を共有しています…`);
+  for (const product of legacyProducts) {
+    await adminMutation(passcode, "upsert", product);
+  }
+  localStorage.removeItem(STORAGE_KEY);
+  await refreshProducts();
+  showToast(`${legacyProducts.length}件の商品を共有しました`);
 }
 
 function escapeHTML(value = "") {
@@ -227,7 +295,7 @@ function showToast(message) {
 }
 
 function isAdminAuthenticated() {
-  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+  return Boolean(sessionStorage.getItem(ADMIN_SESSION_KEY));
 }
 
 function requireAdminAccess(action) {
@@ -245,18 +313,32 @@ function requireAdminAccess(action) {
 document.querySelectorAll(".open-editor").forEach((button) => {
   button.addEventListener("click", () => requireAdminAccess(() => openEditor()));
 });
-passcodeForm.addEventListener("submit", (event) => {
+passcodeForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if ($("#passcodeInput").value === ADMIN_PASSCODE) {
-    sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-    passcodeDialog.close();
-    const action = pendingAdminAction;
-    pendingAdminAction = null;
-    action?.();
+  const passcode = $("#passcodeInput").value;
+  const submitButton = passcodeForm.querySelector('[type="submit"]');
+  submitButton.disabled = true;
+  $("#passcodeError").hidden = true;
+  try {
+    await adminMutation(passcode, "verify");
+  } catch {
+    $("#passcodeError").hidden = false;
+    $("#passcodeInput").select();
+    submitButton.disabled = false;
     return;
   }
-  $("#passcodeError").hidden = false;
-  $("#passcodeInput").select();
+
+  sessionStorage.setItem(ADMIN_SESSION_KEY, passcode);
+  passcodeDialog.close();
+  const action = pendingAdminAction;
+  pendingAdminAction = null;
+  try {
+    await migrateLegacyProducts(passcode);
+  } catch {
+    showToast("端末内の商品を共有できませんでした。通信状態をご確認ください");
+  }
+  action?.();
+  submitButton.disabled = false;
 });
 $("#cancelPasscode").addEventListener("click", () => {
   pendingAdminAction = null;
@@ -321,7 +403,7 @@ grid.addEventListener("keydown", (event) => {
   }
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const id = $("#productId").value;
   const product = {
@@ -336,29 +418,35 @@ form.addEventListener("submit", (event) => {
     updatedAt: new Date().toISOString()
   };
   if (!product.name) return;
-  const previous = [...products];
-  if (id) {
-    products = products.map((item) => item.id === id ? product : item);
-  } else {
-    products = [product, ...products];
+  const submitButton = form.querySelector('[type="submit"]');
+  submitButton.disabled = true;
+  try {
+    await adminMutation(sessionStorage.getItem(ADMIN_SESSION_KEY), "upsert", product);
+    await refreshProducts();
+    editor.close();
+    showToast(id ? "商品を更新しました" : "商品を掲載しました");
+  } catch {
+    showToast("保存できませんでした。通信状態をご確認ください");
+  } finally {
+    submitButton.disabled = false;
   }
-  if (!saveProducts()) {
-    products = previous;
-    return;
-  }
-  editor.close();
-  render();
-  showToast(id ? "商品を更新しました" : "商品を掲載しました");
 });
 
-$("#deleteButton").addEventListener("click", () => {
+$("#deleteButton").addEventListener("click", async () => {
   const id = $("#productId").value;
   if (!id || !confirm("この商品を削除しますか？")) return;
-  products = products.filter((item) => item.id !== id);
-  saveProducts();
-  editor.close();
-  render();
-  showToast("商品を削除しました");
+  const deleteButton = $("#deleteButton");
+  deleteButton.disabled = true;
+  try {
+    await adminMutation(sessionStorage.getItem(ADMIN_SESSION_KEY), "delete", { id });
+    await refreshProducts();
+    editor.close();
+    showToast("商品を削除しました");
+  } catch {
+    showToast("削除できませんでした。通信状態をご確認ください");
+  } finally {
+    deleteButton.disabled = false;
+  }
 });
 
 [passcodeDialog, editor, detailDialog].forEach((dialog) => {
@@ -368,7 +456,18 @@ $("#deleteButton").addEventListener("click", () => {
 });
 
 $("#year").textContent = new Date().getFullYear();
-render();
+emptyState.hidden = true;
+grid.hidden = true;
+$("#itemCount").textContent = "読み込み中";
+refreshProducts();
+
+window.setInterval(() => {
+  if (document.visibilityState === "visible") refreshProducts({ silent: true });
+}, 15000);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") refreshProducts({ silent: true });
+});
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js"));
