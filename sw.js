@@ -1,5 +1,5 @@
-const CACHE = "sunami-sale-v2";
-const ASSETS = ["./", "./index.html", "./styles.css?v=2", "./app.js?v=2", "./icon.svg", "./manifest.webmanifest"];
+const CACHE = "sunami-sale-v3";
+const ASSETS = ["./", "./index.html", "./styles.css?v=3", "./app.js?v=3", "./icon.svg", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
