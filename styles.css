@@ -165,11 +165,14 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 }
 
 @media (min-width: 781px) and (max-width: 1199px) {
-  .hero { grid-template-columns: minmax(0, 1fr) minmax(240px, 280px); gap: 44px; padding-bottom: 36px; }
-  .hero-guide { position: relative; z-index: 1; width: calc(100% + 44px); max-width: none; }
-  .hero-side { position: relative; z-index: 2; align-self: start; justify-content: flex-start; gap: 24px; }
-  .hero-portrait { width: min(100%, 230px); margin: 0; }
-  .hero-note { width: 100%; }
+  .hero { grid-template-columns: minmax(0, 1fr) minmax(220px, 260px); gap: 28px 44px; padding-bottom: 36px; }
+  .hero-copy { display: contents; }
+  .hero-copy h1 { grid-column: 1; grid-row: 1; }
+  .hero-lead { grid-column: 1; grid-row: 2; }
+  .hero-guide { grid-column: 1 / -1; grid-row: 3; width: 100%; max-width: none; margin-top: 0; }
+  .hero-side { grid-column: 2; grid-row: 1 / 3; align-self: start; justify-content: flex-start; gap: 14px; }
+  .hero-portrait { width: min(100%, 150px); margin: 0 auto; }
+  .hero-note { width: 100%; padding-top: 12px; font-size: 11px; line-height: 1.65; }
   .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
