@@ -1,5 +1,7 @@
 const STORAGE_KEY = "sunami-sale-products-v2";
 const MESSENGER_RECIPIENT = "";
+const ADMIN_PASSCODE = "4933";
+const ADMIN_SESSION_KEY = "sunami-sale-admin-auth";
 
 const $ = (selector) => document.querySelector(selector);
 const grid = $("#productGrid");
@@ -8,9 +10,12 @@ const filters = $("#filters");
 const editor = $("#editorDialog");
 const detailDialog = $("#detailDialog");
 const form = $("#productForm");
+const passcodeDialog = $("#passcodeDialog");
+const passcodeForm = $("#passcodeForm");
 let products = loadProducts();
 let activeCategory = "すべて";
 let pendingPhoto = "";
+let pendingAdminAction = null;
 
 function loadProducts() {
   try {
@@ -221,8 +226,41 @@ function showToast(message) {
   showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
+function isAdminAuthenticated() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+}
+
+function requireAdminAccess(action) {
+  if (isAdminAuthenticated()) {
+    action();
+    return;
+  }
+  pendingAdminAction = action;
+  $("#passcodeInput").value = "";
+  $("#passcodeError").hidden = true;
+  passcodeDialog.showModal();
+  setTimeout(() => $("#passcodeInput").focus(), 0);
+}
+
 document.querySelectorAll(".open-editor").forEach((button) => {
-  button.addEventListener("click", () => openEditor());
+  button.addEventListener("click", () => requireAdminAccess(() => openEditor()));
+});
+passcodeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if ($("#passcodeInput").value === ADMIN_PASSCODE) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+    passcodeDialog.close();
+    const action = pendingAdminAction;
+    pendingAdminAction = null;
+    action?.();
+    return;
+  }
+  $("#passcodeError").hidden = false;
+  $("#passcodeInput").select();
+});
+$("#cancelPasscode").addEventListener("click", () => {
+  pendingAdminAction = null;
+  passcodeDialog.close();
 });
 $("#closeEditor").addEventListener("click", () => editor.close());
 $("#closeDetail").addEventListener("click", () => detailDialog.close());
@@ -263,7 +301,7 @@ grid.addEventListener("click", (event) => {
   const editButton = event.target.closest("[data-edit]");
   if (editButton) {
     event.stopPropagation();
-    openEditor(editButton.dataset.edit);
+    requireAdminAccess(() => openEditor(editButton.dataset.edit));
     return;
   }
   const card = event.target.closest("[data-id]");
@@ -323,7 +361,7 @@ $("#deleteButton").addEventListener("click", () => {
   showToast("商品を削除しました");
 });
 
-[editor, detailDialog].forEach((dialog) => {
+[passcodeDialog, editor, detailDialog].forEach((dialog) => {
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });

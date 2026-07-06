@@ -7,7 +7,7 @@
     <meta name="description" content="角南健夫の私物を、次に使ってくださる方へお譲りする小さな販売ページです。" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=15" />
+    <link rel="stylesheet" href="styles.css?v=16" />
     <title>角南商店</title>
   </head>
   <body>
@@ -77,6 +77,23 @@
       <span aria-hidden="true">＋</span><span>商品を登録</span>
     </button>
 
+    <dialog class="passcode-dialog" id="passcodeDialog">
+      <form class="passcode-shell" id="passcodeForm">
+        <p class="section-label">ADMIN ACCESS</p>
+        <h2>パスコードを入力</h2>
+        <p class="passcode-description">商品を登録・編集するには、管理用の4桁パスコードが必要です。</p>
+        <label class="passcode-field">
+          <span>パスコード</span>
+          <input id="passcodeInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" required />
+        </label>
+        <p class="passcode-error" id="passcodeError" hidden>パスコードが違います。</p>
+        <div class="passcode-actions">
+          <button class="text-button" id="cancelPasscode" type="button">キャンセル</button>
+          <button class="solid-button" type="submit">認証する</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog class="editor" id="editorDialog">
       <form method="dialog" class="editor-shell" id="productForm">
         <div class="editor-head">
@@ -145,6 +162,6 @@
     </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=15"></script>
+    <script src="app.js?v=16"></script>
   </body>
 </html>
