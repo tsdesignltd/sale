@@ -1,4 +1,4 @@
-const CACHE = "sunami-sale-v12";
+const CACHE = "sunami-sale-v13";
 const ASSETS = [
   "./",
   "./index.html",
