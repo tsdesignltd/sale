@@ -169,7 +169,7 @@ function render() {
     <article class="product-card" data-id="${product.id}" tabindex="0">
       <div class="product-image-wrap">
         ${product.photo
-          ? `<img class="product-image" src="${product.photo}" alt="${escapeHTML(product.name)}" />`
+          ? `<img class="product-image" src="${product.photo}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" />`
           : `<div class="no-image">NO IMAGE</div>`}
         ${product.status !== "available" ? `<span class="status ${product.status}">${statusLabel(product.status)}</span>` : ""}
         <span class="card-index">${String(index + 1).padStart(2, "0")}</span>

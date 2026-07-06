@@ -1,17 +1,12 @@
-const CACHE = "sunami-sale-v9";
+const CACHE = "sunami-sale-v11";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=9",
-  "./app.js?v=9",
+  "./styles.css?v=11",
+  "./app.js?v=11",
   "./icon.svg",
   "./portrait.svg",
-  "./manifest.webmanifest",
-  "./assets/products/sigma-lens.jpeg",
-  "./assets/products/car-springs.jpeg",
-  "./assets/products/camera-gimbal.jpg",
-  "./assets/products/outdoor-chair.jpeg",
-  "./assets/products/bike-roller.jpeg"
+  "./manifest.webmanifest"
 ];
 
 self.addEventListener("install", (event) => {
