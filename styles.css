@@ -113,13 +113,17 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 .editor-head h2 { font-size: 29px; }
 .editor-head .section-label { margin-bottom: 10px; }
 .icon-button { width: 40px; height: 40px; font-size: 27px; }
-.photo-picker { display: block; min-height: 230px; margin-bottom: 28px; position: relative; overflow: hidden; background: var(--paper); border: 1px dashed #97998f; cursor: pointer; }
-.photo-picker input { position: absolute; opacity: 0; pointer-events: none; }
+.photo-picker { display: block; margin-bottom: 28px; overflow: hidden; background: var(--paper); border: 1px dashed #97998f; }
+.photo-stage { min-height: 230px; position: relative; }
 .photo-picker img { width: 100%; height: 310px; object-fit: contain; background: #ded9ce; }
 .photo-prompt { min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
 .photo-prompt b { font-size: 30px; font-weight: 400; }
 .photo-prompt strong { font-size: 14px; }
 .photo-prompt small { color: var(--muted); font-size: 11px; }
+.photo-source-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; border-top: 1px solid var(--line); background: white; }
+.photo-source-button { min-height: 46px; display: flex; align-items: center; justify-content: center; padding: 10px 14px; border: 1px solid var(--moss); border-radius: 999px; color: var(--moss); background: white; cursor: pointer; font-size: 13px; font-weight: 700; text-align: center; }
+.photo-source-button.is-camera { color: white; background: var(--moss); }
+.photo-input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .field { display: flex; flex-direction: column; gap: 9px; font-size: 11px; font-weight: 600; }
 .field-wide { grid-column: 1 / -1; }
@@ -192,8 +196,9 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
   .inquiry-button { min-height: 44px; }
   .editor { width: 100%; max-height: 94dvh; margin: auto 0 0; border-radius: 14px 14px 0 0; }
   .editor-shell { padding: 25px 18px calc(25px + env(safe-area-inset-bottom)); }
-  .photo-picker, .photo-prompt { min-height: 190px; }
+  .photo-stage, .photo-prompt { min-height: 190px; }
   .photo-picker img { height: 240px; }
+  .photo-source-actions { grid-template-columns: 1fr; }
   .editor-actions { position: sticky; bottom: 0; padding-top: 10px; background: var(--cream); }
   .admin-fab { right: 15px; bottom: calc(15px + env(safe-area-inset-bottom)); }
 }

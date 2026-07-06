@@ -7,7 +7,7 @@
     <meta name="description" content="角南健夫の私物を、次に使ってくださる方へお譲りする小さな販売ページです。" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=21" />
+    <link rel="stylesheet" href="styles.css?v=22" />
     <title>角南商店</title>
   </head>
   <body>
@@ -96,15 +96,26 @@
         </div>
 
         <input id="productId" type="hidden" />
-        <label class="photo-picker" id="photoPicker">
-          <input id="photoInput" type="file" accept="image/*" capture="environment" />
-          <img id="photoPreview" alt="商品写真のプレビュー" hidden />
-          <span class="photo-prompt" id="photoPrompt">
-            <b>＋</b>
-            <strong>写真を撮る・選ぶ</strong>
-            <small>タップしてカメラを開きます</small>
-          </span>
-        </label>
+        <div class="photo-picker" id="photoPicker">
+          <div class="photo-stage">
+            <img id="photoPreview" alt="商品写真のプレビュー" hidden />
+            <span class="photo-prompt" id="photoPrompt">
+              <b>＋</b>
+              <strong>商品写真を追加</strong>
+              <small>下のボタンから撮影または選択できます</small>
+            </span>
+          </div>
+          <div class="photo-source-actions">
+            <label class="photo-source-button is-camera" for="photoCameraInput">
+              写真を撮る
+              <input class="photo-input" id="photoCameraInput" type="file" accept="image/*" capture="environment" />
+            </label>
+            <label class="photo-source-button" for="photoLibraryInput">
+              写真ライブラリから選ぶ
+              <input class="photo-input" id="photoLibraryInput" type="file" accept="image/*" />
+            </label>
+          </div>
+        </div>
 
         <div class="field-grid">
           <label class="field field-wide">
@@ -153,6 +164,6 @@
     </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=21"></script>
+    <script src="app.js?v=22"></script>
   </body>
 </html>

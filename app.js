@@ -355,17 +355,21 @@ $("#freeInput").addEventListener("change", (event) => {
   if (event.target.checked) $("#priceInput").value = "";
 });
 
-$("#photoInput").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-  try {
-    pendingPhoto = await resizePhoto(file);
-    $("#photoPreview").src = pendingPhoto;
-    $("#photoPreview").hidden = false;
-    $("#photoPrompt").hidden = true;
-  } catch {
-    showToast("写真を読み込めませんでした");
-  }
+document.querySelectorAll(".photo-input").forEach((input) => {
+  input.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      pendingPhoto = await resizePhoto(file);
+      $("#photoPreview").src = pendingPhoto;
+      $("#photoPreview").hidden = false;
+      $("#photoPrompt").hidden = true;
+    } catch {
+      showToast("写真を読み込めませんでした");
+    } finally {
+      event.target.value = "";
+    }
+  });
 });
 
 filters.addEventListener("click", (event) => {
