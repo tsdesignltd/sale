@@ -51,7 +51,7 @@ function fromCloudProduct(row) {
   return {
     id: row.id,
     name: row.name,
-    category: row.category,
+    category: normalizeCategory(row.category),
     free: row.free,
     price: row.price,
     description: row.description,
@@ -59,6 +59,10 @@ function fromCloudProduct(row) {
     photo: row.photo,
     updatedAt: row.updated_at
   };
+}
+
+function normalizeCategory(category) {
+  return category === "自動車用品" ? "車用品" : category;
 }
 
 async function refreshProducts({ silent = false } = {}) {
@@ -96,7 +100,10 @@ async function migrateLegacyProducts(passcode) {
   if (!legacyProducts.length) return;
   showToast(`${legacyProducts.length}件の商品を共有しています…`);
   for (const product of legacyProducts) {
-    await adminMutation(passcode, "upsert", product);
+    await adminMutation(passcode, "upsert", {
+      ...product,
+      category: normalizeCategory(product.category)
+    });
   }
   localStorage.removeItem(STORAGE_KEY);
   await refreshProducts();
