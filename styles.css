@@ -151,13 +151,13 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 
 .detail-dialog { width: min(960px, calc(100% - 28px)); max-height: calc(100dvh - 28px); border-radius: 8px; }
 .detail-close { position: absolute; top: 16px; right: 16px; z-index: 2; color: white; background: rgba(0,0,0,.28); border-radius: 50%; }
-.detail-layout { display: grid; grid-template-columns: 1.15fr 1fr; min-height: 580px; }
-.detail-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 6px; align-content: start; overflow: auto; background: #ddd8cc; }
-.detail-gallery.is-single { grid-template-columns: 1fr; padding: 0; }
-.detail-image { width: 100%; height: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #ddd8cc; }
+.detail-layout { display: grid; grid-template-columns: 1.15fr 1fr; min-height: 580px; align-items: start; }
+.detail-gallery { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 8px; align-content: start; background: #ddd8cc; }
+.detail-gallery.is-single { padding: 0; }
+.detail-image { width: 100%; min-height: 0; aspect-ratio: 4 / 3; object-fit: cover; background: #ddd8cc; }
 .detail-gallery.is-single .detail-image { min-height: 580px; aspect-ratio: auto; }
 .detail-gallery .no-image { min-height: 580px; }
-.detail-copy { padding: 68px 50px 42px; display: flex; flex-direction: column; }
+.detail-copy { position: sticky; top: 0; min-height: 580px; padding: 68px 50px 42px; display: flex; flex-direction: column; }
 .detail-copy .section-label { margin-bottom: 16px; }
 .detail-copy h2 { font-size: 34px; }
 .detail-price { margin: 17px 0 35px; font-size: 21px; }
@@ -200,9 +200,8 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
   .field-grid { grid-template-columns: 1fr; }
   .field-wide { grid-column: auto; }
   .detail-layout { grid-template-columns: 1fr; }
-  .detail-gallery { max-height: 55vh; }
   .detail-gallery.is-single .detail-image, .detail-gallery .no-image { min-height: 360px; }
-  .detail-copy { min-height: 450px; padding: 35px 25px 25px; }
+  .detail-copy { position: static; min-height: 450px; padding: 35px 25px 25px; }
 }
 
 @media (max-width: 430px) {
