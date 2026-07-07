@@ -120,6 +120,17 @@ function assignDisplayNumbers(items) {
     }));
 }
 
+function compareProductsByNewest(a, b) {
+  const dateA = Date.parse(a.updatedAt || "") || 0;
+  const dateB = Date.parse(b.updatedAt || "") || 0;
+  if (dateA !== dateB) return dateB - dateA;
+
+  const numberA = Number(a.productNumber || a.displayNumber || 0);
+  const numberB = Number(b.productNumber || b.displayNumber || 0);
+  if (numberA && numberB && numberA !== numberB) return numberB - numberA;
+  return String(b.id).localeCompare(String(a.id));
+}
+
 async function refreshProducts({ silent = false } = {}) {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
@@ -236,9 +247,10 @@ function render() {
     <button class="filter ${category === activeCategory ? "active" : ""}" data-category="${escapeHTML(category)}" type="button">${escapeHTML(category)}</button>
   `).join("");
 
-  const visible = activeCategory === "すべて"
+  const visible = (activeCategory === "すべて"
     ? products
-    : products.filter((item) => item.category === activeCategory);
+    : products.filter((item) => item.category === activeCategory))
+    .sort(compareProductsByNewest);
 
   $("#itemCount").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
   emptyState.hidden = products.length > 0;
