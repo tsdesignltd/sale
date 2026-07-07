@@ -98,12 +98,34 @@ function mainPhoto(product) {
   return productPhotos(product)[0] || "";
 }
 
+function compareProductsByRegistration(a, b) {
+  const numberA = Number(a.productNumber || 0);
+  const numberB = Number(b.productNumber || 0);
+  if (numberA && numberB && numberA !== numberB) return numberA - numberB;
+
+  const dateA = Date.parse(a.updatedAt || "") || 0;
+  const dateB = Date.parse(b.updatedAt || "") || 0;
+  if (dateA !== dateB) return dateA - dateB;
+  return String(a.id).localeCompare(String(b.id));
+}
+
+function assignDisplayNumbers(items) {
+  return [...items]
+    .sort(compareProductsByRegistration)
+    .map((product, index) => ({
+      ...product,
+      displayNumber: product.productNumber
+        ? String(product.productNumber).padStart(3, "0")
+        : String(index + 1).padStart(3, "0")
+    }));
+}
+
 async function refreshProducts({ silent = false } = {}) {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     try {
       const rows = await apiRequest("/rest/v1/products?select=*&order=updated_at.desc");
-      products = rows.map(fromCloudProduct);
+      products = assignDisplayNumbers(rows.map(fromCloudProduct));
       render();
     } catch {
       if (!silent) {
@@ -155,6 +177,7 @@ function formatPrice(product) {
 }
 
 function formatProductNumber(product) {
+  if (product.displayNumber) return product.displayNumber;
   return product.productNumber ? String(product.productNumber).padStart(3, "0") : "";
 }
 
@@ -220,9 +243,9 @@ function render() {
   $("#itemCount").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
   emptyState.hidden = products.length > 0;
   grid.hidden = products.length === 0;
-  grid.innerHTML = visible.map((product, index) => {
+  grid.innerHTML = visible.map((product) => {
     const photo = mainPhoto(product);
-    const number = formatProductNumber(product) || String(index + 1).padStart(2, "0");
+    const number = formatProductNumber(product);
     return `
     <article class="product-card" data-id="${product.id}" tabindex="0">
       <div class="product-image-wrap">
