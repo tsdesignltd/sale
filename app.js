@@ -197,6 +197,14 @@ function productDisplayName(product) {
   return number ? `${number} ${product.name}` : product.name;
 }
 
+function productTitleHTML(product, className) {
+  const number = formatProductNumber(product);
+  return `
+    ${number ? `<span class="${className}-number">${escapeHTML(number)}</span>` : ""}
+    <span class="${className}-name">${escapeHTML(product.name)}</span>
+  `;
+}
+
 function statusLabel(status) {
   return { available: "販売中", reserved: "商談中", sold: "売約済み" }[status] || "販売中";
 }
@@ -270,7 +278,7 @@ function render() {
       <div class="product-meta">
         <p class="product-category">${escapeHTML(product.category)}</p>
         <div class="product-title-row">
-          <h3 class="product-title">${escapeHTML(productDisplayName(product))}</h3>
+          <h3 class="product-title">${productTitleHTML(product, "product-title")}</h3>
           <span class="product-price">${formatPrice(product)}</span>
         </div>
         <p class="product-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
@@ -367,7 +375,7 @@ function openDetail(id) {
       ${gallery}
       <div class="detail-copy">
         <p class="section-label">${escapeHTML(product.category)} / ${statusLabel(product.status)}</p>
-        <h2>${escapeHTML(productDisplayName(product))}</h2>
+        <h2 class="detail-title">${productTitleHTML(product, "detail-title")}</h2>
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <button class="contact-link ${product.free ? "is-free" : "is-paid"}" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>

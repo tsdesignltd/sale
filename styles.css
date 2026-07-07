@@ -74,6 +74,8 @@ h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); font-weight: 500; letter-spac
 .product-category { margin: 0 0 7px; color: var(--muted); font-size: 10px; letter-spacing: .08em; }
 .product-title-row { display: block; }
 .product-title { margin: 0; font-size: 15px; font-weight: 500; }
+.product-title-number { display: block; margin-bottom: 4px; color: var(--muted); font-size: 10px; letter-spacing: .12em; }
+.product-title-name { display: block; }
 .product-price { display: block; margin-top: 7px; white-space: nowrap; font-size: 13px; font-weight: 600; }
 .product-description { height: 4.8em; display: -webkit-box; margin: 10px 0 0; overflow: hidden; color: var(--muted); font-size: 10px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .card-actions { margin-top: auto; padding-top: 12px; }
@@ -160,6 +162,8 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 .detail-copy { position: sticky; top: 0; min-height: 580px; padding: 68px 50px 42px; display: flex; flex-direction: column; }
 .detail-copy .section-label { margin-bottom: 16px; }
 .detail-copy h2 { font-size: 34px; }
+.detail-title-number { display: block; margin-bottom: 8px; color: var(--muted); font-size: 13px; letter-spacing: .16em; }
+.detail-title-name { display: block; }
 .detail-price { margin: 17px 0 35px; font-size: 21px; }
 .detail-description { white-space: pre-wrap; color: #555b52; font-size: 13px; line-height: 2; }
 .contact-link { display: block; width: 100%; margin-top: auto; padding: 16px; color: white; text-align: center; text-decoration: none; background: var(--moss); border: 0; cursor: pointer; font-size: 15px; font-weight: 700; }
@@ -211,6 +215,7 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
   .guide-list p { font-size: 13px; }
   .catalog-heading h2 { font-size: 32px; }
   .product-title { font-size: 13px; }
+  .product-title-number { font-size: 9px; }
   .product-price { margin-top: 6px; }
   .inquiry-button { min-height: 44px; }
   .editor { width: 100%; max-height: 94dvh; margin: auto 0 0; border-radius: 14px 14px 0 0; }
