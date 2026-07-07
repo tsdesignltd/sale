@@ -7,7 +7,7 @@
     <meta name="description" content="角南健夫の私物を、次に使ってくださる方へお譲りする小さな販売ページです。" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=26" />
+    <link rel="stylesheet" href="styles.css?v=27" />
     <title>角南商店</title>
   </head>
   <body>
@@ -98,11 +98,11 @@
         <input id="productId" type="hidden" />
         <div class="photo-picker" id="photoPicker">
           <div class="photo-stage">
-            <img id="photoPreview" alt="商品写真のプレビュー" hidden />
+            <div class="photo-preview-list" id="photoPreviewList" aria-label="商品写真のプレビュー" hidden></div>
             <span class="photo-prompt" id="photoPrompt">
               <b>＋</b>
               <strong>商品写真を追加</strong>
-              <small>下のボタンから撮影または選択できます</small>
+              <small>最大5枚まで撮影または選択できます</small>
             </span>
           </div>
           <div class="photo-source-actions">
@@ -112,7 +112,7 @@
             </label>
             <label class="photo-source-button" for="photoLibraryInput">
               写真ライブラリから選ぶ
-              <input class="photo-input" id="photoLibraryInput" type="file" accept="image/*" />
+              <input class="photo-input" id="photoLibraryInput" type="file" accept="image/*" multiple />
             </label>
           </div>
         </div>
@@ -164,6 +164,6 @@
     </dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=26"></script>
+    <script src="app.js?v=27"></script>
   </body>
 </html>

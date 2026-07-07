@@ -15,7 +15,7 @@ const passcodeDialog = $("#passcodeDialog");
 const passcodeForm = $("#passcodeForm");
 let products = [];
 let activeCategory = "すべて";
-let pendingPhoto = "";
+let pendingPhotos = [];
 let pendingAdminAction = null;
 let refreshPromise = null;
 
@@ -48,21 +48,54 @@ async function apiRequest(path, options = {}) {
 }
 
 function fromCloudProduct(row) {
+  const photos = parsePhotos(row.photo);
   return {
     id: row.id,
+    productNumber: row.product_number,
     name: row.name,
     category: normalizeCategory(row.category),
     free: row.free,
     price: row.price,
     description: row.description,
     status: row.status,
-    photo: row.photo,
+    photo: photos[0] || "",
+    photos,
     updatedAt: row.updated_at
   };
 }
 
 function normalizeCategory(category) {
   return category === "自動車用品" ? "車用品" : category;
+}
+
+function parsePhotos(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean).slice(0, 5);
+  const text = String(value).trim();
+  if (!text) return [];
+  if (text.startsWith("[")) {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean).slice(0, 5);
+    } catch {
+      return [text].slice(0, 5);
+    }
+  }
+  return [text].slice(0, 5);
+}
+
+function serializePhotos(photos) {
+  const list = photos.filter(Boolean).slice(0, 5);
+  if (list.length === 0) return "";
+  return list.length === 1 ? list[0] : JSON.stringify(list);
+}
+
+function productPhotos(product) {
+  return parsePhotos(product.photos?.length ? product.photos : product.photo);
+}
+
+function mainPhoto(product) {
+  return productPhotos(product)[0] || "";
 }
 
 async function refreshProducts({ silent = false } = {}) {
@@ -121,6 +154,15 @@ function formatPrice(product) {
   return `¥${Number(product.price || 0).toLocaleString("ja-JP")}`;
 }
 
+function formatProductNumber(product) {
+  return product.productNumber ? String(product.productNumber).padStart(3, "0") : "";
+}
+
+function productDisplayName(product) {
+  const number = formatProductNumber(product);
+  return number ? `${number} ${product.name}` : product.name;
+}
+
 function statusLabel(status) {
   return { available: "販売中", reserved: "商談中", sold: "売約済み" }[status] || "販売中";
 }
@@ -131,7 +173,7 @@ function inquiryLabel(product) {
 
 function inquiryMessage(product) {
   const label = inquiryLabel(product);
-  return `【${label}】\n「${product.name}」（${formatPrice(product)}）を希望します。\nまだお取引可能でしょうか？`;
+  return `【${label}】\n「${productDisplayName(product)}」（${formatPrice(product)}）を希望します。\nまだお取引可能でしょうか？`;
 }
 
 async function copyInquiryMessage(message) {
@@ -178,19 +220,22 @@ function render() {
   $("#itemCount").textContent = `${visible.length} ${visible.length === 1 ? "ITEM" : "ITEMS"}`;
   emptyState.hidden = products.length > 0;
   grid.hidden = products.length === 0;
-  grid.innerHTML = visible.map((product, index) => `
+  grid.innerHTML = visible.map((product, index) => {
+    const photo = mainPhoto(product);
+    const number = formatProductNumber(product) || String(index + 1).padStart(2, "0");
+    return `
     <article class="product-card" data-id="${product.id}" tabindex="0">
       <div class="product-image-wrap">
-        ${product.photo
-          ? `<img class="product-image" src="${product.photo}" alt="${escapeHTML(product.name)}" loading="lazy" decoding="async" />`
+        ${photo
+          ? `<img class="product-image" src="${photo}" alt="${escapeHTML(productDisplayName(product))}" loading="lazy" decoding="async" />`
           : `<div class="no-image">NO IMAGE</div>`}
         ${product.status !== "available" ? `<span class="status ${product.status}">${statusLabel(product.status)}</span>` : ""}
-        <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
+        <span class="card-index">${number}</span>
       </div>
       <div class="product-meta">
         <p class="product-category">${escapeHTML(product.category)}</p>
         <div class="product-title-row">
-          <h3 class="product-title">${escapeHTML(product.name)}</h3>
+          <h3 class="product-title">${escapeHTML(productDisplayName(product))}</h3>
           <span class="product-price">${formatPrice(product)}</span>
         </div>
         <p class="product-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
@@ -203,7 +248,20 @@ function render() {
         </div>
       </div>
     </article>
+  `; }).join("");
+}
+
+function renderPhotoEditor() {
+  const previewList = $("#photoPreviewList");
+  previewList.innerHTML = pendingPhotos.map((photo, index) => `
+    <div class="photo-preview-card">
+      <img src="${photo}" alt="商品写真 ${index + 1}" />
+      <button class="photo-remove-button" type="button" data-remove-photo="${index}" aria-label="写真${index + 1}を削除">×</button>
+      <span class="photo-count">${index + 1}/5</span>
+    </div>
   `).join("");
+  previewList.hidden = pendingPhotos.length === 0;
+  $("#photoPrompt").hidden = pendingPhotos.length > 0;
 }
 
 function resetForm() {
@@ -211,10 +269,8 @@ function resetForm() {
   $("#productId").value = "";
   $("#editorTitle").textContent = "商品を登録";
   $("#deleteButton").hidden = true;
-  pendingPhoto = "";
-  $("#photoPreview").hidden = true;
-  $("#photoPreview").removeAttribute("src");
-  $("#photoPrompt").hidden = false;
+  pendingPhotos = [];
+  renderPhotoEditor();
   $("#priceInput").disabled = false;
 }
 
@@ -233,12 +289,8 @@ function openEditor(id = "") {
     $("#descriptionInput").value = product.description || "";
     $("#statusInput").value = product.status;
     $("#deleteButton").hidden = false;
-    pendingPhoto = product.photo || "";
-    if (pendingPhoto) {
-      $("#photoPreview").src = pendingPhoto;
-      $("#photoPreview").hidden = false;
-      $("#photoPrompt").hidden = true;
-    }
+    pendingPhotos = productPhotos(product);
+    renderPhotoEditor();
   }
   editor.showModal();
 }
@@ -269,14 +321,18 @@ function openDetail(id) {
   const product = products.find((item) => item.id === id);
   if (!product) return;
   const unavailable = product.status !== "available";
+  const photos = productPhotos(product);
+  const gallery = photos.length
+    ? `<div class="detail-gallery ${photos.length === 1 ? "is-single" : ""}">
+        ${photos.map((photo, index) => `<img class="detail-image" src="${photo}" alt="${escapeHTML(productDisplayName(product))} 写真${index + 1}" />`).join("")}
+      </div>`
+    : `<div class="detail-gallery is-single"><div class="detail-image no-image">NO IMAGE</div></div>`;
   $("#detailContent").innerHTML = `
     <div class="detail-layout">
-      ${product.photo
-        ? `<img class="detail-image" src="${product.photo}" alt="${escapeHTML(product.name)}" />`
-        : `<div class="detail-image no-image">NO IMAGE</div>`}
+      ${gallery}
       <div class="detail-copy">
         <p class="section-label">${escapeHTML(product.category)} / ${statusLabel(product.status)}</p>
-        <h2>${escapeHTML(product.name)}</h2>
+        <h2>${escapeHTML(productDisplayName(product))}</h2>
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <button class="contact-link ${product.free ? "is-free" : "is-paid"}" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
@@ -357,19 +413,33 @@ $("#freeInput").addEventListener("change", (event) => {
 
 document.querySelectorAll(".photo-input").forEach((input) => {
   input.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+    const availableSlots = 5 - pendingPhotos.length;
+    if (availableSlots <= 0) {
+      showToast("写真は最大5枚までです");
+      event.target.value = "";
+      return;
+    }
+    const selectedFiles = files.slice(0, availableSlots);
     try {
-      pendingPhoto = await resizePhoto(file);
-      $("#photoPreview").src = pendingPhoto;
-      $("#photoPreview").hidden = false;
-      $("#photoPrompt").hidden = true;
+      const resizedPhotos = await Promise.all(selectedFiles.map(resizePhoto));
+      pendingPhotos = [...pendingPhotos, ...resizedPhotos].slice(0, 5);
+      renderPhotoEditor();
+      if (files.length > availableSlots) showToast("写真は最大5枚まで追加しました");
     } catch {
       showToast("写真を読み込めませんでした");
     } finally {
       event.target.value = "";
     }
   });
+});
+
+$("#photoPreviewList").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-photo]");
+  if (!button) return;
+  pendingPhotos.splice(Number(button.dataset.removePhoto), 1);
+  renderPhotoEditor();
 });
 
 filters.addEventListener("click", (event) => {
@@ -420,7 +490,7 @@ form.addEventListener("submit", async (event) => {
     price: $("#freeInput").checked ? 0 : Number($("#priceInput").value || 0),
     description: $("#descriptionInput").value.trim(),
     status: $("#statusInput").value,
-    photo: pendingPhoto,
+    photo: serializePhotos(pendingPhotos),
     updatedAt: new Date().toISOString()
   };
   if (!product.name) return;
@@ -431,8 +501,10 @@ form.addEventListener("submit", async (event) => {
     await refreshProducts();
     editor.close();
     showToast(id ? "商品を更新しました" : "商品を掲載しました");
-  } catch {
-    showToast("保存できませんでした。通信状態をご確認ください");
+  } catch (error) {
+    showToast(error.message.includes("999")
+      ? "商品番号が999に達したため、これ以上登録できません"
+      : "保存できませんでした。通信状態をご確認ください");
   } finally {
     submitButton.disabled = false;
   }
