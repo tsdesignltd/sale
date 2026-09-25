@@ -249,7 +249,7 @@ function openLineInquiry(id) {
 }
 
 function render() {
-  const categories = ["すべて", ...new Set(products.map((item) => item.category))];
+  const categories = ["すべて", ...new Set([...products.map((item) => item.category), "カメラ用品"])];
   if (!categories.includes(activeCategory)) activeCategory = "すべて";
   filters.innerHTML = categories.map((category) => `
     <button class="filter ${category === activeCategory ? "active" : ""}" data-category="${escapeHTML(category)}" type="button">${escapeHTML(category)}</button>
