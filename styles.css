@@ -138,10 +138,10 @@ dialog::backdrop { background: rgba(14,20,15,.66); backdrop-filter: blur(3px); }
 .field input, .field select, .field textarea { width: 100%; padding: 13px 12px; color: var(--ink); background: white; border: 1px solid #d5d1c8; border-radius: var(--radius); outline: none; font-size: 14px; font-weight: 400; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--moss); box-shadow: 0 0 0 2px rgba(56,84,60,.12); }
 .price-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
-.free-toggle { position: relative; }
-.free-toggle input { position: absolute; opacity: 0; }
-.free-toggle span { height: 44px; display: grid; place-items: center; padding: 0 14px; border: 1px solid #d5d1c8; border-radius: var(--radius); background: white; cursor: pointer; }
-.free-toggle input:checked + span { color: white; background: var(--moss); border-color: var(--moss); }
+.free-toggle { min-height: 44px; display: flex; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid #d5d1c8; border-radius: var(--radius); background: white; cursor: pointer; white-space: nowrap; }
+.free-toggle input { width: 18px; height: 18px; padding: 0; border: 0; accent-color: var(--moss); cursor: pointer; }
+.free-toggle span { font-size: 12px; font-weight: 600; }
+.free-toggle:has(input:checked) { border-color: var(--moss); background: rgba(56,84,60,.08); }
 .yen-input { position: relative; }
 .yen-input span { position: absolute; top: 14px; left: 12px; color: var(--muted); }
 .yen-input input { padding-left: 29px; }
