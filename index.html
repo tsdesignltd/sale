@@ -7,7 +7,7 @@
     <meta name="description" content="角南健夫の私物を、次に使ってくださる方へお譲りする小さな販売ページです。" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=33" />
+    <link rel="stylesheet" href="styles.css?v=34" />
     <title>角南商店</title>
   </head>
   <body>
@@ -28,9 +28,9 @@
           </div>
         </div>
         <div class="hero-side">
-          <figure class="hero-portrait">
+          <button class="hero-portrait open-editor" type="button" aria-label="商品を登録">
             <img src="portrait.png" alt="角南健夫の似顔絵" />
-          </figure>
+          </button>
           <div class="hero-note">
             <span class="note-number">自己紹介</span>
             <p>角南健夫／プロダクトデザイナー<br />趣味は自転車、工作、ラジコン、サーフィン、素潜り、スノーボード。思い切って断捨離を決意！ご協力お願いしますm(_ _)m。所在は東京都町田市です。</p>
@@ -51,7 +51,6 @@
           <span class="empty-symbol">＋</span>
           <h3>最初の品物を登録しましょう</h3>
           <p>スマホで写真を撮ると、そのまま商品カードを作成できます。</p>
-          <button class="solid-button open-editor" type="button">商品を登録</button>
         </div>
         <div class="product-grid" id="productGrid" aria-live="polite"></div>
       </section>
@@ -62,10 +61,6 @@
       <p>Personal belongings of Takeo Sunami</p>
       <p>© <span id="year"></span> Takeo Sunami</p>
     </footer>
-
-    <button class="admin-fab open-editor" type="button" aria-label="商品を登録">
-      <span aria-hidden="true">＋</span><span>商品を登録</span>
-    </button>
 
     <dialog class="passcode-dialog" id="passcodeDialog">
       <form class="passcode-shell" id="passcodeForm">
