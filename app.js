@@ -121,6 +121,10 @@ function assignDisplayNumbers(items) {
 }
 
 function compareProductsByNewest(a, b) {
+  const completedA = a.status === "sold" ? 1 : 0;
+  const completedB = b.status === "sold" ? 1 : 0;
+  if (completedA !== completedB) return completedA - completedB;
+
   const dateA = Date.parse(a.updatedAt || "") || 0;
   const dateB = Date.parse(b.updatedAt || "") || 0;
   if (dateA !== dateB) return dateB - dateA;
@@ -205,8 +209,9 @@ function productTitleHTML(product, className) {
   `;
 }
 
-function statusLabel(status) {
-  return { available: "販売中", reserved: "商談中", sold: "売約済み" }[status] || "販売中";
+function statusLabel(product) {
+  if (product.status === "sold") return product.free ? "譲渡済み" : "売約済み";
+  return { available: "販売中", reserved: "商談中" }[product.status] || "販売中";
 }
 
 function inquiryLabel(product) {
@@ -277,7 +282,7 @@ function render() {
         ${photo
           ? `<img class="product-image" src="${photo}" alt="${escapeHTML(productDisplayName(product))}" loading="lazy" decoding="async" />`
           : `<div class="no-image">NO IMAGE</div>`}
-        ${product.status !== "available" ? `<span class="status ${product.status}">${statusLabel(product.status)}</span>` : ""}
+        ${product.status !== "available" ? `<span class="status ${product.status}">${statusLabel(product)}</span>` : ""}
         <span class="card-index">${number}</span>
       </div>
       <div class="product-meta">
@@ -289,7 +294,7 @@ function render() {
         <p class="product-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <div class="card-actions">
           <button class="inquiry-button ${product.free ? "is-free" : "is-paid"}" type="button" data-inquiry="${product.id}" ${product.status !== "available" ? "disabled" : ""}>
-            ${product.status === "available" ? inquiryLabel(product) : statusLabel(product.status)}
+            ${product.status === "available" ? inquiryLabel(product) : statusLabel(product)}
             <span aria-hidden="true">↗</span>
           </button>
           <button class="edit-link" type="button" data-edit="${product.id}">内容を編集</button>
@@ -379,12 +384,12 @@ function openDetail(id) {
     <div class="detail-layout">
       ${gallery}
       <div class="detail-copy">
-        <p class="section-label">${escapeHTML(product.category)} / ${statusLabel(product.status)}</p>
+        <p class="section-label">${escapeHTML(product.category)} / ${statusLabel(product)}</p>
         <h2 class="detail-title">${productTitleHTML(product, "detail-title")}</h2>
         <p class="detail-price">${formatPrice(product)}</p>
         <p class="detail-description">${escapeHTML(product.description || "詳しい状態については、お問い合わせください。")}</p>
         <button class="contact-link ${product.free ? "is-free" : "is-paid"}" type="button" data-detail-inquiry="${product.id}" ${unavailable ? "disabled" : ""}>
-          ${unavailable ? statusLabel(product.status) : `${inquiryLabel(product)}を公式LINEで連絡`}
+          ${unavailable ? statusLabel(product) : `${inquiryLabel(product)}を公式LINEで連絡`}
         </button>
         <p class="detail-caption">希望文をコピーして公式LINEを開きます。送料・受け渡し方法は個別にご相談ください。</p>
       </div>
