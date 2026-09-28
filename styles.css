@@ -64,7 +64,7 @@ h2 { margin: 0; font-size: clamp(30px, 4vw, 50px); font-weight: 500; letter-spac
 .product-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 42px 16px; }
 .product-card { position: relative; display: flex; flex-direction: column; cursor: pointer; }
 .product-image-wrap { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #ded9ce; }
-.product-image-wrap.is-completed::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top right, transparent calc(50% - 2px), var(--orange) calc(50% - 2px), var(--orange) calc(50% + 2px), transparent calc(50% + 2px)); pointer-events: none; }
+.product-image-wrap.is-completed::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top right, transparent calc(50% - 2px), #111 calc(50% - 2px), #111 calc(50% + 2px), transparent calc(50% + 2px)); pointer-events: none; }
 .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
 .product-card:hover .product-image { transform: scale(1.025); }
 .no-image { width: 100%; height: 100%; display: grid; place-items: center; color: #888b82; background: repeating-linear-gradient(135deg, #ded9ce, #ded9ce 1px, #e9e5dc 1px, #e9e5dc 12px); font-size: 12px; }
