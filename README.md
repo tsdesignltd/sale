@@ -34,7 +34,6 @@ https://github.com/tsdesignltd/sale
   - 家電
   - 衣類
   - 本・音楽
-  - カメラ・映像
   - カメラ用品
   - 車用品
   - アウトドア

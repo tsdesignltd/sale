@@ -65,7 +65,9 @@ function fromCloudProduct(row) {
 }
 
 function normalizeCategory(category) {
-  return category === "自動車用品" ? "車用品" : category;
+  if (category === "自動車用品") return "車用品";
+  if (category === "カメラ・映像") return "カメラ用品";
+  return category;
 }
 
 function parsePhotos(value) {
