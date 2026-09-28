@@ -278,7 +278,7 @@ function render() {
     const number = formatProductNumber(product);
     return `
     <article class="product-card" data-id="${product.id}" tabindex="0">
-      <div class="product-image-wrap">
+      <div class="product-image-wrap ${product.status === "sold" ? "is-completed" : ""}">
         ${photo
           ? `<img class="product-image" src="${photo}" alt="${escapeHTML(productDisplayName(product))}" loading="lazy" decoding="async" />`
           : `<div class="no-image">NO IMAGE</div>`}
